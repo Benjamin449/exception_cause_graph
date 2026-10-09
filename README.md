@@ -35,3 +35,10 @@ The trade-off: the output is not a re-raisable exception tree. It is a read-only
 - **Cycles.** Exceptions whose `__context__` points back at an ancestor are guarded by an `id()`-based visited set. The walker terminates; you get each exception once.
 - **Broken `__str__`.** If an exception's `__str__` raises, the walker falls back to `repr()` so a broken exception cannot crash the walk.
 - **No traceback.** An exception with no `__traceback__` (e.g. constructed but never raised) yields an empty `traceback_str`, not a synthetic placeholder.
+
+## Design notes
+
+The window stores values eagerly rather than keeping running aggregates. Running
+sums drift with floating point over long streams, and recomputing from a small
+buffer is cheap enough that the drift is not worth the speed.
+
